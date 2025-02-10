@@ -1,15 +1,20 @@
 // script.js
 
-// Ketika DOM telah siap, susun struktur halaman
+// --- KONFIGURASI BLYNK --- //
+const token = "M-MsQC9qCxhnBiJiMTED8bCRYgAsetqO";
+const apiUrlPH = `https://blynk.cloud/external/api/get?token=${token}&pin=V1`;
+const apiUrlMoisture = `https://blynk.cloud/external/api/get?token=${token}&pin=V0`;
+
+// --- RENDERING STRUKTUR HALAMAN --- //
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.getElementById("root");
 
-  // --- Header ---
+  // Buat header
   const header = document.createElement("header");
   const logoContainer = document.createElement("div");
   logoContainer.className = "logo-container";
   
-  // Ganti 'logo.png' dengan URL logo Anda, atau hapus elemen img jika tidak diperlukan
+  // Ganti 'logo.png' dengan URL logo Anda (atau hapus tag <img> jika tidak diperlukan)
   const logoImg = document.createElement("img");
   logoImg.src = "Logoo.png";
   logoImg.alt = "Logo";
@@ -22,18 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
   header.appendChild(logoContainer);
   root.appendChild(header);
 
-  // --- Konten Utama ---
+  // Buat main container
   const main = document.createElement("main");
 
-  // Kontainer sensor untuk menampilkan nilai sensor
+  // Sensor container untuk menampilkan nilai pH dan kelembapan
   const sensorContainer = document.createElement("div");
   sensorContainer.className = "sensor-container";
-
-  // Tambahan teks untuk judul monitoring
-  const monitoringTitle = document.createElement("p");
-  monitoringTitle.className = "monitoring-title";
-  monitoringTitle.textContent = "Sistem Monitoring Kebun Gizi";
-
+  
   // Nilai pH
   const pHLabel = document.createElement("p");
   pHLabel.textContent = "pH:";
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pHValue.id = "phValue";
   pHValue.className = "circle";
   pHValue.textContent = "--";
-
+  
   // Nilai kelembapan
   const moistureLabel = document.createElement("p");
   moistureLabel.textContent = "Kelembapan (%):";
@@ -49,14 +49,13 @@ document.addEventListener("DOMContentLoaded", () => {
   moistureValue.id = "moistureValue";
   moistureValue.className = "circle";
   moistureValue.textContent = "--";
-
-  sensorContainer.appendChild(monitoringTitle);
+  
   sensorContainer.appendChild(pHLabel);
   sensorContainer.appendChild(pHValue);
   sensorContainer.appendChild(moistureLabel);
   sensorContainer.appendChild(moistureValue);
 
-  // Kontainer grafik
+  // Chart container
   const chartContainer = document.createElement("div");
   chartContainer.className = "chart-container";
   const canvas = document.createElement("canvas");
@@ -69,14 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
   
   root.appendChild(main);
 
-  // Inisialisasi grafik
+  // Inisialisasi grafik setelah DOM tersusun
   initChart();
-  // Ambil data sensor saat halaman termuat dan update tiap 1 menit (60000 ms)
+  // Ambil data sensor segera setelah halaman termuat
   fetchSensorData();
+  // Set interval untuk update data setiap 1 menit (60000 ms)
   setInterval(fetchSensorData, 60000);
 });
 
-// --- Inisialisasi Grafik --- //
+// --- INISIALISASI CHART --- //
 let sensorChart;
 const chartData = {
   labels: [],
@@ -101,101 +101,77 @@ const chartData = {
 };
 
 function initChart() {
-  const ctx = document.getElementById("sensorChart").getContext("2d");
-  const now = new Date();
+  const ctx = document.getElementById('sensorChart').getContext('2d');
   sensorChart = new Chart(ctx, {
-    type: "line",
+    type: 'line',
     data: chartData,
     options: {
       responsive: true,
-      maintainAspectRatio: false, // Agar aspek rasio bisa disesuaikan oleh CSS
       scales: {
         x: {
-          type: "time",
+          type: 'time',
           time: {
-            unit: "hour",
-            tooltipFormat: "dd MMM yyyy, HH:mm"
+            unit: 'minute',
+            displayFormats: {
+              minute: 'HH:mm'
+            }
           },
-          // Set rentang waktu 24 jam terakhir
-          min: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-          max: now,
           title: {
             display: true,
-            text: "Waktu"
-          },
-          ticks: {
-            autoSkip: true,
-            maxTicksLimit: 10
+            text: 'Waktu'
           }
         },
         y1: {
-          type: "linear",
-          position: "left",
+          type: 'linear',
+          position: 'left',
           title: {
             display: true,
-            text: "pH"
+            text: 'pH'
           },
           suggestedMin: 0,
-          suggestedMax: 14
+          suggestedMax: 14,
         },
         y2: {
-          type: "linear",
-          position: "right",
+          type: 'linear',
+          position: 'right',
           title: {
             display: true,
-            text: "Kelembapan (%)"
+            text: 'Kelembapan (%)'
           },
           grid: {
-            drawOnChartArea: false
+            drawOnChartArea: false,
           },
           suggestedMin: 0,
-          suggestedMax: 100
+          suggestedMax: 100,
         }
       }
     }
   });
 }
 
-// --- Fungsi Mengambil Data dari Blynk --- //
+// --- AMBIL DATA DARI BLYNK --- //
 function fetchSensorData() {
-  // Kredensial dan endpoint API Blynk
-  const token = "M-MsQC9qCxhnBiJiMTED8bCRYgAsetqO";
-  const apiUrlPH = `https://blynk.cloud/external/api/get?token=${token}&pin=V1`;
-  const apiUrlMoisture = `https://blynk.cloud/external/api/get?token=${token}&pin=V0`;
-
   Promise.all([
     fetch(apiUrlPH).then(response => response.text()),
     fetch(apiUrlMoisture).then(response => response.text())
   ])
-    .then(([phText, moistureText]) => {
-      const phValueNum = parseFloat(phText);
-      const moistureValueNum = parseFloat(moistureText);
-      const now = new Date();
+  .then(([phText, moistureText]) => {
+    const phValueNum = parseFloat(phText);
+    const moistureValueNum = parseFloat(moistureText);
+    const now = new Date();
 
-      // Perbarui nilai sensor pada halaman
-      document.getElementById("phValue").textContent = isNaN(phValueNum) ? "--" : phValueNum.toFixed(2);
-      document.getElementById("moistureValue").textContent = isNaN(moistureValueNum) ? "--" : moistureValueNum;
+    // Perbarui nilai sensor pada halaman
+    document.getElementById("phValue").textContent = isNaN(phValueNum) ? "--" : phValueNum.toFixed(2);
+    document.getElementById("moistureValue").textContent = isNaN(moistureValueNum) ? "--" : moistureValueNum;
 
-      // Tambahkan data ke grafik
-      chartData.labels.push(now);
-      chartData.datasets[0].data.push(phValueNum);
-      chartData.datasets[1].data.push(moistureValueNum);
+    // Tambahkan data ke grafik
+    chartData.labels.push(now);
+    chartData.datasets[0].data.push(phValueNum);
+    chartData.datasets[1].data.push(moistureValueNum);
 
-      // Hapus data yang lebih lama dari 24 jam
-      const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      while (chartData.labels.length > 0 && chartData.labels[0] < cutoff) {
-          chartData.labels.shift();
-          chartData.datasets[0].data.shift();
-          chartData.datasets[1].data.shift();
-      }
-
-      // Perbarui rentang sumbu x agar mencakup 24 jam terakhir
-      sensorChart.options.scales.x.min = cutoff;
-      sensorChart.options.scales.x.max = now;
-
-      sensorChart.update();
-    })
-    .catch(error => {
-      console.error("Error fetching sensor data:", error);
-    });
+    sensorChart.update();
+  })
+  .catch(error => {
+    console.error("Error fetching sensor data:", error);
+  });
 }
