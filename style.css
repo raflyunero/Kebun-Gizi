@@ -1,0 +1,116 @@
+/* Reset dan pengaturan dasar */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to left, #75d23f, #98d2ac);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Menyesuaikan agar konten naik */
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-bottom: 2px solid #ccc;
+  width: 100%;
+}
+
+/* Logo dan judul di kiri */
+.logo-container {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.logo-container img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.logo-container h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+/* Kontainer utama */
+main {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 100px; /* Agar tidak tertutup header */
+}
+
+/* Kontainer untuk menampilkan nilai pH */
+.sensor-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Tambahan teks Sistem Monitoring Kebun Gizi */
+.monitoring-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.circle {
+  font-size: 40px;
+  font-weight: bold;
+  color: #8884d8; /* Warna biru agar angka lebih mencolok */
+  margin-top: 5px;
+}
+
+/* Grafik Monitoring pH */
+.chart-container {
+  margin-top: 20px;
+  width: 90%;        /* Menggunakan 90% dari lebar layar */
+  max-width: 1000px; /* Maksimal lebar 1000px */
+}
+
+/* Pastikan canvas menyesuaikan lebar kontainer */
+.chart-container canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Footer */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-top: 2px solid #ccc;
+  text-align: center;
+  padding: 5px 10px;
+  min-height: 25px;
+}
+
+/* Footer text dengan tampilan lebih keren */
+.footer-text {
+  font-size: 10px;
+  font-weight: bold;
+  color: rgba(0, 128, 0, 0.7); /* Warna hijau transparan */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  transition: color 0.3s ease-in-out;
+}
+
+/* Hover effect pada footer text */
+.footer-text:hover {
+  color: rgba(0, 128, 0, 1); /* Warna lebih jelas saat dihover */
+}
